@@ -23,7 +23,21 @@ body {
     border: 2px solid black;
     width: 100%;
     flex-direction: column;
+    overflow-y: scroll;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
 }
+
+.done-feed::-webkit-scrollbar,
+.to-do-feed::-webkit-scrollbar,
+.done-feed::-webkit-scrollbar {
+    width: 4px;
+    height: 80%;
+    background-color: #c7ad7f;
+    color: #000000;
+    border-radius: 50%;
+}
+
 
 .to-do-header,
 .doing-header,
@@ -52,7 +66,7 @@ body {
     margin: 0 auto 1em;
 }
 
-.card textarea {
+.card-textarea {
     padding: 0;
     margin: 0;
     line-height: 1.5em;
