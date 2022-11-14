@@ -1,0 +1,101 @@
+/* TYPOGRAPHY */
+
+body {
+    margin: 0;
+}
+
+.container {
+    display: flex;
+    width: 100vw;
+    height: 90vh;
+    background-color: #fffff3;
+    box-sizing: border-box;
+}
+
+.to-do-feed,
+.doing-feed,
+.done-feed {
+    border-radius: 2em;
+    display: flex;
+    background-color: #f5f5dd;
+    margin: 10px;
+    box-sizing: border-box;
+    border: 2px solid black;
+    width: 100%;
+    flex-direction: column;
+}
+
+.to-do-header,
+.doing-header,
+.done-header {
+    text-align: center;
+    padding: 1em 2em;
+}
+
+.to-do-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+/* CARD DESIGN */
+
+.card {
+    border-radius: 1em;
+    width: 90%;
+    display: flex;
+    flex-direction: column;
+    background-color: #c7ad7f;
+    padding: 1em;
+    height: auto;
+    box-sizing: border-box;
+    margin: 0 auto 1em;
+}
+
+.card textarea {
+    padding: 0;
+    margin: 0;
+    line-height: 1.5em;
+    box-sizing: border-box;
+    overflow: hidden;
+    resize: none;
+    width: 100%;
+    margin-bottom: 0.5em;
+    border: 1px solid beige;
+    border-radius: 0.3em;
+}
+
+.date-created {
+    margin-right: auto;
+}
+
+.card-footer {
+    display: flex;
+    justify-content: end;
+    align-items: center;
+    gap: 1em;
+}
+
+.card-push-btn,
+.card-collapse-btn,
+.add-card-btn {
+    width: 2em;
+    height: 2em;
+    border: none;
+    padding: 5px;
+    align-self: flex-end;
+    background-color: green;
+    border-radius: 0.25em;
+}
+
+input {
+    border: none;
+}
+
+.header {
+    height: 10vh;
+    background-color: gray;
+    text-align: center;
+    box-sizing: border-box;  
+}
+
