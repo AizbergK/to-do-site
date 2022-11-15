@@ -18,6 +18,7 @@ body {
 
 .container {
     display: flex;
+    margin: 0;
     width: 100vw;
     height: 90vh;
     background-color: #fffff3;
@@ -30,15 +31,15 @@ body {
     border-radius: 2em;
     display: flex;
     background-color: lightgray;
-    margin: 10px;
+    margin: 1em auto;
     box-sizing: border-box;
     border: 2px solid black;
     width: 30%;
     flex-direction: column;
-    overflow-y: none;
+    overflow-y: scroll;
 }
 
-/* .done-feed::-webkit-scrollbar,
+.doing-feed::-webkit-scrollbar,
 .to-do-feed::-webkit-scrollbar,
 .done-feed::-webkit-scrollbar {
     width: 4px;
@@ -46,7 +47,7 @@ body {
     background-color: #c7ad7f;
     color: #000000;
     border-radius: 50%;
-} */
+}
 
 
 .to-do-header,
@@ -60,6 +61,9 @@ body {
     display: flex;
     align-items: center;
     justify-content: space-between;
+    position: sticky;
+    top: 0px;
+    background-color: lightgray;
 }
 
 /* CARD DESIGN */
@@ -74,25 +78,26 @@ body {
     height: auto;
     box-sizing: border-box;
     margin: 0 auto 1em;
+    position: relative;
 }
 
 .card p {
     padding: 0.5em;
     border: none;
-    margin: auto;
+    margin: none;
     overflow-wrap: break-word;
 }
 
 .textfield {
+    justify-self: start;
     padding: 0.5em;
-    margin: auto;
+    margin: 0;
     line-height: 1.5em;
     box-sizing: border-box;
     overflow: hidden;
     resize: none;
-    width: 100%;
+    width: 90%;
     margin-bottom: 0.5em;
-    border: 1px solid beige;
     border-radius: 0.3em;
     text-align-last: ce;
     border: none;
@@ -109,8 +114,8 @@ body {
     align-items: center;
     gap: 1em;
 }
-
-.card-push-btn,
+.close-card-btn,
+.push-card-btn,
 .card-collapse-btn,
 .add-card-btn {
     width: 2em;
@@ -120,6 +125,13 @@ body {
     align-self: flex-end;
     background-color: rgb(0, 209, 216);
     border-radius: 0.25em;
+}
+
+.close-card-btn {
+    position: absolute;
+    background-color: transparent;
+    top: 5px;
+    right: 5px;
 }
 
 input {
