@@ -57,7 +57,9 @@ body {
     padding: 1em 2em;
 }
 
-.to-do-header {
+.to-do-header,
+.doing-header,
+.done-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -143,5 +145,12 @@ input {
     background-color: gray;
     text-align: center;
     box-sizing: border-box;  
+}
+
+#removeLocalStorage {
+    font-weight: bold;
+    font-size: 1.5rem;
+    display: block;
+    color: red;
 }
 

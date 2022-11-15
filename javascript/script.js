@@ -8,11 +8,17 @@ const doneFeed = document.querySelector("#done-card-container");
 let todoCards = [];
 let doingCards = [];
 let doneCards = [];
-console.log(todoCards, doingCards, doneCards)
+
 getData();
-console.log(todoCards, doingCards, doneCards)
-document.addEventListener('onload', render)
-// localStorage.clear();
+
+render();
+
+
+document.getElementById("removeLocalStorage")
+.addEventListener("click", function(){
+    localStorage.clear();
+})
+
 
 let date = new Date()
 console.log((new Date()).toLocaleString())
@@ -51,7 +57,7 @@ let notInEditing = true;
 
 function saveTextInput(e) {
     const triggeredArray = returnFeed(e.currentTarget.dataset.feed);
-    const modularId = /card-div\d+/;
+    const modularId = /(todo|doing|done)\d+/;
     if(modularId.test(e.target.id)){
         e.srcElement.style.height = `auto`;
         e.srcElement.style.height = `${e.srcElement.scrollHeight}px`;
@@ -73,11 +79,29 @@ function saveTextInput(e) {
 }
 
 function returnFeed(feedData) {
-    return feedData == "todo" ? todoCards : feedData == "doing" ? doingCards : doneCards;
+    if(feedData == "todo") {
+        return todoCards;
+    } else if (feedData == "doing") {
+        return doingCards;
+    } else if (feedData == "done") {
+        return doneCards;
+    }
 }
 
 function returnTargetFeed(feedData) {
-    return feedData == "todo" ? doingCards : feedData == "doing" ? doneCards : todoCards; 
+    if(feedData == "todo") {
+        return doingCards;
+    } else if (feedData == "doing") {
+        return doneCards;
+    }
+}
+
+function returnNewParentFeed(feedData) {
+    if(feedData == "todo") {
+        return "doing";
+    } else if(feedData == "doing") {
+        return "done";
+    }
 }
 
 function deleteCard(e) {
@@ -89,44 +113,32 @@ function deleteCard(e) {
 }
 
 function pushForward(e) {
-    // let triggeredArray
-    // let targetArray
-    // if(e.currentTarget.dataset.feed == "todo") {
-    //     triggeredArray = todoCards;
-    //     targetArray = doingCards;
-    // }
-    // if(e.currentTarget.dataset.feed == "doing") {
-    //     triggeredArray = doingCards;
-    //     targetArray = doneCards;
-    // }
-    // if(e.currentTarget.dataset.feed == "done") {
-    //     triggeredArray = doneCards;
-    //     targetArray = todoCards;
-    // }
     const triggeredArray = returnFeed(e.currentTarget.dataset.feed);
     const targetArray = returnTargetFeed(e.currentTarget.dataset.feed);
-    console.log(e.currentTarget.dataset.feed)
-    console.log(todoCards, doingCards, doneCards)
-    console.log(triggeredArray, targetArray)
+    const newParentFeed = returnNewParentFeed(e.currentTarget.dataset.feed);
     if(e.target.dataset.type == "push-card-btn") {
+        triggeredArray[e.target.dataset.indexNumber].parentFeed = newParentFeed;
         targetArray.unshift(triggeredArray[e.target.dataset.indexNumber])
         triggeredArray.splice(e.target.dataset.indexNumber, 1);
+        render();
     }
-    render();
 }
 
 function changeTextWrapper(e) {
-    const triggeredArray = returnFeed(e.currentTarget.dataset.feed);
+    const triggerFeed = e.currentTarget.dataset.feed;
+    const triggeredArray = returnFeed(triggerFeed);
     const indexNr = e.target.dataset.indexNumber;
+    console.log(`${triggerFeed}${indexNr}`)
     if(triggeredArray[indexNr].textWrapper == 'p' && notInEditing && e.target.dataset.type == "textarea") {
         notInEditing = false;
         addCardBtn.disabled = true;
         triggeredArray[indexNr].textWrapper = 'textarea';
         render();
-        const textAreaEdit = document.getElementById(`card-div${indexNr}`)
+        const textAreaEdit = document.getElementById(`${triggerFeed}${indexNr}`)
         textAreaEdit.style.height = `auto`;
         textAreaEdit.style.height = `${textAreaEdit.scrollHeight}px`;
-        document.getElementById(`card-div${indexNr}`).focus();
+        document.getElementById(`${triggerFeed}${indexNr}`).focus();
+        
     }  
 }
 
@@ -135,12 +147,42 @@ function changeTextWrapper(e) {
     updateCardIndex(todoCards)
     addCardBtn.disabled = true;
     render();
-    document.getElementById("card-div0").focus();
+    document.getElementById("todo0").focus();
 }
 
 function updateCardIndex(list) {
     list.forEach(card => card.listIndex = list.indexOf(card));
 }
+
+ function generateHtml (card) {
+    card.cardHtml = `
+    <div class="card">
+        <${card.textWrapper} 
+        data-index-number="${card.listIndex}"
+        data-type="textarea"
+            class="card-div textfield draggable" 
+            id="${card.parentFeed}${card.listIndex}" 
+            data-index-number="${card.listIndex}" 
+            style="height:auto">${card.toDoText}</${card.textWrapper}>
+        <div class="card-footer">
+            <div class="date-created">${card.dateStarted}</div>
+                <button 
+                    class="push-card-btn" 
+                    data-index-number="${card.listIndex}"
+                    data-type="push-card-btn"
+                >
+                    &#8594;
+                </button>
+        </div>  
+        <button 
+            class="close-card-btn"
+            data-index-number="${card.listIndex}"
+            data-type="close-card-btn"
+        >
+            &#10006;
+        </button>
+    </div>`
+ }
 
 function render() {
     updateCardIndex(todoCards);
@@ -150,15 +192,15 @@ function render() {
     doingFeed.innerHTML = '';
     doneFeed.innerHTML = '';
     todoCards.forEach(element =>{
-        element.generateHtml();
+        generateHtml(element);
         toDoFeed.innerHTML += element.cardHtml;
     });
     doingCards.forEach(element =>{
-        element.generateHtml();
+        generateHtml(element);
         doingFeed.innerHTML += element.cardHtml;
     });
     doneCards.forEach(element =>{
-        element.generateHtml();
+        generateHtml(element);
         doneFeed.innerHTML += element.cardHtml;
     });
     saveData();
@@ -175,9 +217,6 @@ function getData() {
     todoCards = JSON.parse(window.localStorage.getItem('todoFeed')) ? JSON.parse(window.localStorage.getItem('todoFeed')) : [];
     doingCards = JSON.parse(window.localStorage.getItem('doingFeed')) ? JSON.parse(window.localStorage.getItem('doingFeed')) : [];
     doneCards = JSON.parse(window.localStorage.getItem('doneFeed')) ? JSON.parse(window.localStorage.getItem('doneFeed')) : [];
-    // todoCards.forEach(element => element = new Card(element));
-    // doingCards.forEach(element => element = new Card(element));
-    // doneCards.forEach(element => element = new Card(element));
 }
 
 
