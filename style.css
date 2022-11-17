@@ -20,7 +20,7 @@ body {
     display: flex;
     margin: 0;
     width: 100vw;
-    height: 90vh;
+    height: calc(100vh - 85px);
     background-color: #fffff3;
     box-sizing: border-box;
 }
@@ -31,30 +31,50 @@ body {
     border-radius: 2em;
     display: flex;
     background-color: lightgray;
-    margin: 1em auto;
+    margin: 15px auto;
     box-sizing: border-box;
     border: 2px solid black;
     width: 30%;
     flex-direction: column;
-    overflow-y: scroll;
+    overflow-y: hidden;
 }
 
-.doing-feed::-webkit-scrollbar,
-.to-do-feed::-webkit-scrollbar,
-.done-feed::-webkit-scrollbar {
-    width: 4px;
-    height: 80%;
-    background-color: #c7ad7f;
-    color: #000000;
-    border-radius: 50%;
+.to-do-card-container::-webkit-scrollbar,
+.doing-card-container::-webkit-scrollbar,
+.done-card-container::-webkit-scrollbar {
+    width: 0.7em;
 }
 
+.to-do-card-container::-webkit-scrollbar-track,
+.doing-card-container::-webkit-scrollbar-track,
+.done-card-container::-webkit-scrollbar-track {
+    background: hsl(120 50% 75% / 1);
+    border-radius: 100vw;
+    margin-bottom: 1.5em;
+}
+
+.to-do-card-container::-webkit-scrollbar-thumb,
+.doing-card-container::-webkit-scrollbar-thumb,
+.done-card-container::-webkit-scrollbar-thumb {
+    background: hsl(120 100% 20% / 1);
+    border: 0.2em solid hsl(120 50% 75% / 1);
+    border-radius: 100vw;
+}
+
+.to-do-card-container,
+.doing-card-container,
+.done-card-container {
+    margin-right: 0.5em;
+    overflow-y: auto;
+    height: 100%;
+}
 
 .to-do-header,
 .doing-header,
 .done-header {
     text-align: center;
     padding: 1em 2em;
+    z-index: 1;
 }
 
 .to-do-header,
@@ -79,7 +99,7 @@ body {
     padding: 1em;
     height: auto;
     box-sizing: border-box;
-    margin: 0 auto 1em;
+    margin: 0 0.5em 1em auto;
     position: relative;
 }
 
@@ -141,7 +161,7 @@ input {
 }
 
 .header {
-    height: 10vh;
+    height:  85px;
     background-color: gray;
     text-align: center;
     box-sizing: border-box;  
@@ -152,5 +172,9 @@ input {
     font-size: 1.5rem;
     display: block;
     color: red;
+}
+
+.dragging {
+    opacity: 0.5;
 }
 

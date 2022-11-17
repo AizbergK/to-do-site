@@ -14,9 +14,13 @@ getData();
 render();
 
 
+
+
 document.getElementById("removeLocalStorage")
 .addEventListener("click", function(){
     localStorage.clear();
+    getData();
+    render();
 })
 
 
@@ -51,13 +55,51 @@ doneFeed.addEventListener("click", changeTextWrapper);
 doneFeed.addEventListener("click", deleteCard);
 
 
+//DRAG AND DROP EVENT LISTENERS
+
+const draggableCards = document.querySelectorAll(".draggableContainer");
+
+let draggedCardIndex;
+let draggedFeedOrigin;
+let draggedFeedTarget;
+let targetFeedIndex;
+
+draggableCards.forEach(draggable => {
+
+    draggable.addEventListener("dragstart", function(e) { 
+        e.target.classList.add("dragging");
+    })
+
+    draggable.addEventListener("dragend", function(e) {
+        e.target.classList.remove("dragging");
+        console.log(draggedCardIndex, draggedFeedOrigin, draggedFeedTarget);
+        // if(draggedFeedOrigin != draggedFeedTarget){
+            moveCard(draggedCardIndex, draggedFeedTarget, draggedFeedOrigin, targetFeedIndex);
+        //}
+    })
+
+    draggable.addEventListener("dragover", function(e) {
+        e.preventDefault();
+        const dragged = document.querySelector(".dragging");
+        draggedCardIndex = dragged.dataset.indexNumber;
+        draggedFeedOrigin = dragged.dataset.cardFeed;
+        draggedFeedTarget = e.currentTarget.dataset.feed;
+        targetFeedIndex = getTargetFeedIndex(e.clientY, returnFeed(draggedFeedTarget));
+        
+    })
+})
+
+function getTargetFeedIndex(mouseY, feed) {
+    return feed.findLast(card => (mouseY - card.positionY) > 0).listIndex + 1
+}
+
 //Limits maximum textarea to 1
 
 let notInEditing = true;
 
 function saveTextInput(e) {
     const triggeredArray = returnFeed(e.currentTarget.dataset.feed);
-    const modularId = /(todo|doing|done)\d+/;
+    const modularId = /(texttodo|textdoing|textdone)\d+/;
     if(modularId.test(e.target.id)){
         e.srcElement.style.height = `auto`;
         e.srcElement.style.height = `${e.srcElement.scrollHeight}px`;
@@ -113,15 +155,22 @@ function deleteCard(e) {
 }
 
 function pushForward(e) {
-    const triggeredArray = returnFeed(e.currentTarget.dataset.feed);
-    const targetArray = returnTargetFeed(e.currentTarget.dataset.feed);
-    const newParentFeed = returnNewParentFeed(e.currentTarget.dataset.feed);
     if(e.target.dataset.type == "push-card-btn") {
-        triggeredArray[e.target.dataset.indexNumber].parentFeed = newParentFeed;
-        targetArray.unshift(triggeredArray[e.target.dataset.indexNumber])
-        triggeredArray.splice(e.target.dataset.indexNumber, 1);
-        render();
+        const index = e.target.dataset.indexNumber;
+        const triggeredArray = e.currentTarget.dataset.feed;
+        const targetArray = returnNewParentFeed(e.currentTarget.dataset.feed);
+        moveCard(index, targetArray, triggeredArray);
     }
+}
+
+function moveCard(cardIndex, passedTargetArray, passedTriggeredArray, targetFeedIndex = 0) {
+    const triggeredArray = returnFeed(passedTriggeredArray);
+    const targetArray = returnFeed(passedTargetArray);
+    triggeredArray[cardIndex].parentFeed = passedTargetArray;
+    targetArray.splice(targetFeedIndex, 0, triggeredArray[cardIndex]);
+    triggeredArray.splice(cardIndex, 1);
+    render();
+
 }
 
 function changeTextWrapper(e) {
@@ -134,34 +183,45 @@ function changeTextWrapper(e) {
         addCardBtn.disabled = true;
         triggeredArray[indexNr].textWrapper = 'textarea';
         render();
-        const textAreaEdit = document.getElementById(`${triggerFeed}${indexNr}`)
+        const textAreaEdit = document.getElementById(`text${triggerFeed}${indexNr}`)
         textAreaEdit.style.height = `auto`;
         textAreaEdit.style.height = `${textAreaEdit.scrollHeight}px`;
-        document.getElementById(`${triggerFeed}${indexNr}`).focus();
+        document.getElementById(`text${triggerFeed}${indexNr}`).focus();
         
     }  
 }
 
  function addNewCard() {
     todoCards.unshift(new Card());
-    updateCardIndex(todoCards)
     addCardBtn.disabled = true;
     render();
-    document.getElementById("todo0").focus();
+    document.getElementById("texttodo0").focus();
 }
 
 function updateCardIndex(list) {
     list.forEach(card => card.listIndex = list.indexOf(card));
 }
 
+function updateCardYPosition(list) {
+    list.forEach(card => {
+        const theCard = document.querySelector(`#${card.parentFeed}${card.listIndex}`)
+        card.positionY = theCard.getBoundingClientRect().y + (theCard.getBoundingClientRect().height / 2);
+    });
+}
+
  function generateHtml (card) {
     card.cardHtml = `
-    <div class="card">
+    <div class="card draggable" 
+    draggable="true"
+    id="${card.parentFeed}${card.listIndex}"
+    data-index-number="${card.listIndex}"
+    data-card-feed="${card.parentFeed}"
+    >
         <${card.textWrapper} 
         data-index-number="${card.listIndex}"
         data-type="textarea"
-            class="card-div textfield draggable" 
-            id="${card.parentFeed}${card.listIndex}" 
+            class="card-div textfield" 
+            id="text${card.parentFeed}${card.listIndex}" 
             data-index-number="${card.listIndex}" 
             style="height:auto">${card.toDoText}</${card.textWrapper}>
         <div class="card-footer">
@@ -203,6 +263,9 @@ function render() {
         generateHtml(element);
         doneFeed.innerHTML += element.cardHtml;
     });
+    updateCardYPosition(todoCards);
+    updateCardYPosition(doingCards);
+    updateCardYPosition(doneCards);
     saveData();
 }
 
@@ -218,6 +281,9 @@ function getData() {
     doingCards = JSON.parse(window.localStorage.getItem('doingFeed')) ? JSON.parse(window.localStorage.getItem('doingFeed')) : [];
     doneCards = JSON.parse(window.localStorage.getItem('doneFeed')) ? JSON.parse(window.localStorage.getItem('doneFeed')) : [];
 }
+
+
+
 
 
 
