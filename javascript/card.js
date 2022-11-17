@@ -1,3 +1,5 @@
+// Card class default properties needed for generating the template HTML
+
 class Card {
     constructor(){
         this.listIndex = 0;

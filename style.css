@@ -134,16 +134,17 @@ body {
     display: flex;
     justify-content: end;
     align-items: center;
-    gap: 1em;
+    gap: 0.3em;
 }
 .close-card-btn,
 .push-card-btn,
+.reverse-card-btn,
 .card-collapse-btn,
 .add-card-btn {
     width: 2em;
     height: 2em;
     border: none;
-    padding: 5px;
+    padding: 2px;
     align-self: flex-end;
     background-color: rgb(0, 209, 216);
     border-radius: 0.25em;

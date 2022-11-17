@@ -1,9 +1,15 @@
 import { Card } from "./card.js";
 
+
+// MAIN HTML OBJECTS
+
 const addCardBtn = document.querySelector("#add-card-btn");
 const toDoFeed = document.querySelector("#to-do-card-container");
 const doingFeed = document.querySelector("#doing-card-container");
 const doneFeed = document.querySelector("#done-card-container");
+
+
+// INITIALIZING FROM LOCAL STORAGE
 
 let todoCards = [];
 let doingCards = [];
@@ -14,7 +20,7 @@ getData();
 render();
 
 
-
+// REMOVE LOCAL STORAGE BUTTON
 
 document.getElementById("removeLocalStorage")
 .addEventListener("click", function(){
@@ -24,11 +30,11 @@ document.getElementById("removeLocalStorage")
 })
 
 
-let date = new Date()
-console.log((new Date()).toLocaleString())
+let date = new Date();
+console.log((new Date()).toLocaleString());
 
 
-//TO DO FEED EVENT LISTENERS
+// TO DO FEED EVENT LISTENERS
 
 toDoFeed.addEventListener("keypress", saveTextInput);
 toDoFeed.addEventListener("focusout", saveTextInput);
@@ -53,9 +59,10 @@ doneFeed.addEventListener("keypress", saveTextInput);
 doneFeed.addEventListener("focusout", saveTextInput);
 doneFeed.addEventListener("click", changeTextWrapper);
 doneFeed.addEventListener("click", deleteCard);
+doneFeed.addEventListener("click", pushForward);
 
 
-//DRAG AND DROP EVENT LISTENERS
+//DRAG AND DROP FUNCTIONALITY
 
 const draggableCards = document.querySelectorAll(".draggableContainer");
 
@@ -72,12 +79,11 @@ draggableCards.forEach(draggable => {
 
     draggable.addEventListener("dragend", function(e) {
         e.target.classList.remove("dragging");
-        console.log(draggedCardIndex, draggedFeedOrigin, draggedFeedTarget);
         if(draggedFeedOrigin != draggedFeedTarget){
             moveCard(draggedCardIndex, draggedFeedTarget, draggedFeedOrigin, targetFeedIndex);
         } else {
             if(draggedCardIndex < targetFeedIndex){
-                moveCard(draggedCardIndex, draggedFeedTarget, draggedFeedOrigin, targetFeedIndex - 1);
+                moveCard(draggedCardIndex, draggedFeedTarget, draggedFeedOrigin, targetFeedIndex);
             } else if(draggedCardIndex > targetFeedIndex) {
                 moveCard(draggedCardIndex, draggedFeedTarget, draggedFeedOrigin, targetFeedIndex);
             }
@@ -99,12 +105,17 @@ draggableCards.forEach(draggable => {
 })
 
 function getTargetFeedIndex(mouseY, feed) {
-    return feed.findLast(card => (mouseY - card.positionY) > 0).listIndex + 1
+    return feed.findLast(card => (mouseY - card.positionY) > 0).listIndex + 1;
 }
 
-//Limits maximum textarea to 1
+// Limits maximum textareas in editing to 1
 
 let notInEditing = true;
+
+
+// Dynamically resize textarea according to current text height. Saves
+// current text on losing focus or Enter and removes the card if it is empty and 
+// save input is received. Toggles text wrapper from <textarea> to <p>
 
 function saveTextInput(e) {
     const triggeredArray = returnFeed(e.currentTarget.dataset.feed);
@@ -129,6 +140,9 @@ function saveTextInput(e) {
     }
 }
 
+
+// Returns the HTML element based on card metadata input.
+
 function returnFeed(feedData) {
     if(feedData == "todo") {
         return todoCards;
@@ -139,21 +153,23 @@ function returnFeed(feedData) {
     }
 }
 
-function returnTargetFeed(feedData) {
-    if(feedData == "todo") {
-        return doingCards;
-    } else if (feedData == "doing") {
-        return doneCards;
+
+// Returns the target feed based on current feed and push direction.
+
+function returnNewParentFeed(feedData, direction = 1) {
+    const feedsArray = ["todo", "doing", "done"];
+    if(feedsArray.findIndex(feed => feed == feedData) + direction == -1) {
+        return feedsArray[2];
+    } else if(feedsArray.findIndex(feed => feed == feedData) + direction == 3) {
+        return feedsArray[0];
+    } else {
+        return feedsArray[feedsArray.findIndex(feed => feed == feedData) + direction];
     }
+    
 }
 
-function returnNewParentFeed(feedData) {
-    if(feedData == "todo") {
-        return "doing";
-    } else if(feedData == "doing") {
-        return "done";
-    }
-}
+
+// Removes card from the proper array.
 
 function deleteCard(e) {
     const triggeredArray = returnFeed(e.currentTarget.dataset.feed);
@@ -163,17 +179,34 @@ function deleteCard(e) {
     }
 }
 
+
+// Pushes card on button press based on button type dataset.
+
 function pushForward(e) {
     if(e.target.dataset.type == "push-card-btn") {
         const index = e.target.dataset.indexNumber;
         const triggeredArray = e.currentTarget.dataset.feed;
         const targetArray = returnNewParentFeed(e.currentTarget.dataset.feed);
         moveCard(index, targetArray, triggeredArray);
+    } else if(e.target.dataset.type == "reverse-card-btn") {
+        const index = e.target.dataset.indexNumber;
+        const triggeredArray = e.currentTarget.dataset.feed;
+        const targetArray = returnNewParentFeed(e.currentTarget.dataset.feed, -1);
+        moveCard(index, targetArray, triggeredArray);
     }
 }
 
+
+// Input: card index, card current array, target array and target index.
+//
+// Saves the card to be moved in a new const swapCard.
+// Deletes the card from the origin array then moves it into the new array.
+// Works on the same array.
+
 function moveCard(cardIndex, passedTargetArray, passedTriggeredArray, targetFeedIndex = 0) {
-    console.log(targetFeedIndex)
+    if(passedTargetArray == passedTriggeredArray && cardIndex < targetFeedIndex) {
+        targetFeedIndex -= 1;
+    }
     const triggeredArray = returnFeed(passedTriggeredArray);
     const targetArray = returnFeed(passedTargetArray);
     triggeredArray[cardIndex].parentFeed = passedTargetArray;
@@ -184,11 +217,15 @@ function moveCard(cardIndex, passedTargetArray, passedTriggeredArray, targetFeed
 
 }
 
+
+// Checks the HTML object dataset for the unique ID attributed to textarea and
+// changes toggles the text wrapper from <textarea> to <p> and automatically
+// adjusts textarea height based on text height on keypress.
+
 function changeTextWrapper(e) {
     const triggerFeed = e.currentTarget.dataset.feed;
     const triggeredArray = returnFeed(triggerFeed);
     const indexNr = e.target.dataset.indexNumber;
-    console.log(`${triggerFeed}${indexNr}`)
     if(triggeredArray[indexNr].textWrapper == 'p' && notInEditing && e.target.dataset.type == "textarea") {
         notInEditing = false;
         addCardBtn.disabled = true;
@@ -197,10 +234,13 @@ function changeTextWrapper(e) {
         const textAreaEdit = document.getElementById(`text${triggerFeed}${indexNr}`)
         textAreaEdit.style.height = `auto`;
         textAreaEdit.style.height = `${textAreaEdit.scrollHeight}px`;
-        document.getElementById(`text${triggerFeed}${indexNr}`).focus();
-        
+        textAreaEdit.focus();
+        textAreaEdit.selectionStart = textAreaEdit.value.length;
     }  
 }
+
+
+// Adds a new card to the to-do array and focuses the textarea.
 
  function addNewCard() {
     todoCards.unshift(new Card());
@@ -209,16 +249,24 @@ function changeTextWrapper(e) {
     document.getElementById("texttodo0").focus();
 }
 
+
+// Updates card object listIndex property with the current one.
+
 function updateCardIndex(list) {
     list.forEach(card => card.listIndex = list.indexOf(card));
 }
 
+// Updates card object positionY property with the current one.
+
 function updateCardYPosition(list) {
     list.forEach(card => {
-        const theCard = document.querySelector(`#${card.parentFeed}${card.listIndex}`)
+        const theCard = document.querySelector(`#${card.parentFeed}${card.listIndex}`);
         card.positionY = theCard.getBoundingClientRect().y + (theCard.getBoundingClientRect().height / 2);
     });
 }
+
+
+// Generates the HTML code of the Card object based on it's current properties.
 
  function generateHtml (card) {
     card.cardHtml = `
@@ -238,12 +286,20 @@ function updateCardYPosition(list) {
         <div class="card-footer">
             <div class="date-created">${card.dateStarted}</div>
                 <button 
+                class="reverse-card-btn" 
+                data-index-number="${card.listIndex}"
+                data-type="reverse-card-btn"
+                >
+                    &#8592;
+                </button>
+                <button 
                     class="push-card-btn" 
                     data-index-number="${card.listIndex}"
                     data-type="push-card-btn"
                 >
                     &#8594;
                 </button>
+
         </div>  
         <button 
             class="close-card-btn"
@@ -254,6 +310,9 @@ function updateCardYPosition(list) {
         </button>
     </div>`
  }
+
+
+// Rerenders the HTML page based on most recent available feed and card data.
 
 function render() {
     updateCardIndex(todoCards);
@@ -281,11 +340,16 @@ function render() {
 }
 
 
+// Saves data to local storage.
+
 function saveData() {
     window.localStorage.setItem('todoFeed', JSON.stringify(todoCards));
     window.localStorage.setItem('doingFeed', JSON.stringify(doingCards));
     window.localStorage.setItem('doneFeed', JSON.stringify(doneCards));
 }
+
+
+// Loads data from local storage.
 
 function getData() {
     todoCards = JSON.parse(window.localStorage.getItem('todoFeed')) ? JSON.parse(window.localStorage.getItem('todoFeed')) : [];
