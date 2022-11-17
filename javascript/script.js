@@ -73,9 +73,15 @@ draggableCards.forEach(draggable => {
     draggable.addEventListener("dragend", function(e) {
         e.target.classList.remove("dragging");
         console.log(draggedCardIndex, draggedFeedOrigin, draggedFeedTarget);
-        // if(draggedFeedOrigin != draggedFeedTarget){
+        if(draggedFeedOrigin != draggedFeedTarget){
             moveCard(draggedCardIndex, draggedFeedTarget, draggedFeedOrigin, targetFeedIndex);
-        //}
+        } else {
+            if(draggedCardIndex < targetFeedIndex){
+                moveCard(draggedCardIndex, draggedFeedTarget, draggedFeedOrigin, targetFeedIndex - 1);
+            } else if(draggedCardIndex > targetFeedIndex) {
+                moveCard(draggedCardIndex, draggedFeedTarget, draggedFeedOrigin, targetFeedIndex);
+            }
+        }
     })
 
     draggable.addEventListener("dragover", function(e) {
@@ -167,8 +173,9 @@ function moveCard(cardIndex, passedTargetArray, passedTriggeredArray, targetFeed
     const triggeredArray = returnFeed(passedTriggeredArray);
     const targetArray = returnFeed(passedTargetArray);
     triggeredArray[cardIndex].parentFeed = passedTargetArray;
-    targetArray.splice(targetFeedIndex, 0, triggeredArray[cardIndex]);
+    const swapCard = triggeredArray[cardIndex]
     triggeredArray.splice(cardIndex, 1);
+    targetArray.splice(targetFeedIndex, 0, swapCard);
     render();
 
 }
