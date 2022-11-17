@@ -90,8 +90,11 @@ draggableCards.forEach(draggable => {
         draggedCardIndex = dragged.dataset.indexNumber;
         draggedFeedOrigin = dragged.dataset.cardFeed;
         draggedFeedTarget = e.currentTarget.dataset.feed;
+        try {
         targetFeedIndex = getTargetFeedIndex(e.clientY, returnFeed(draggedFeedTarget));
-        
+        } catch (error) {
+            targetFeedIndex = 0;
+        }
     })
 })
 
@@ -170,6 +173,7 @@ function pushForward(e) {
 }
 
 function moveCard(cardIndex, passedTargetArray, passedTriggeredArray, targetFeedIndex = 0) {
+    console.log(targetFeedIndex)
     const triggeredArray = returnFeed(passedTriggeredArray);
     const targetArray = returnFeed(passedTargetArray);
     triggeredArray[cardIndex].parentFeed = passedTargetArray;
