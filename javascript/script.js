@@ -30,13 +30,13 @@ document.getElementById("removeLocalStorage")
 })
 
 
-let date = new Date();
-console.log((new Date()).toLocaleString());
+// let date = new Date();
+// console.log((new Date()).toLocaleString());
 
 
 // TO DO FEED EVENT LISTENERS
 
-toDoFeed.addEventListener("keypress", saveTextInput);
+toDoFeed.addEventListener("keydown", saveTextInput);
 toDoFeed.addEventListener("focusout", saveTextInput);
 toDoFeed.addEventListener("click", changeTextWrapper);
 toDoFeed.addEventListener("click", deleteCard);
@@ -74,11 +74,14 @@ let targetFeedIndex;
 draggableCards.forEach(draggable => {
 
     draggable.addEventListener("dragstart", function(e) { 
-        e.target.classList.add("dragging");
+        console.log(e.target)
+        if (!e.target.classList.contains("editing")) {
+            e.target.classList.toggle("dragging");
+        }
     })
 
     draggable.addEventListener("dragend", function(e) {
-        e.target.classList.remove("dragging");
+        e.target.classList.toggle("dragging");
         if(draggedFeedOrigin != draggedFeedTarget){
             moveCard(draggedCardIndex, draggedFeedTarget, draggedFeedOrigin, targetFeedIndex);
         } else {
@@ -118,19 +121,29 @@ let notInEditing = true;
 // save input is received. Toggles text wrapper from <textarea> to <p>
 
 function saveTextInput(e) {
+    // e.preventDefault();
     const triggeredArray = returnFeed(e.currentTarget.dataset.feed);
     const modularId = /(texttodo|textdoing|textdone)\d+/;
-    if(modularId.test(e.target.id)){
+    if(modularId.test(e.target.id)) {
         e.srcElement.style.height = `auto`;
         e.srcElement.style.height = `${e.srcElement.scrollHeight}px`;
-        if(e.key == "Enter" || e.type == "focusout"){
+        if(e.key == "Enter") {
+            e.target.blur();
+        }
+        if(e.type == "focusout") {
             if(e.target.value == ""){
                 triggeredArray.splice(e.target.dataset.indexNumber, 1);
                 addCardBtn.disabled = false;
                 notInEditing = true;
             } else {
                 const indexNr = e.target.dataset.indexNumber;
-                triggeredArray[indexNr].toDoText = e.target.value;
+                let cleanUserInput = DOMPurify.sanitize(e.target.value, {ALLOWED_TAGS: [], KEEP_CONTENT: false});
+                triggeredArray[indexNr].toDoText = cleanUserInput;
+                if(cleanUserInput == "") {
+                    triggeredArray.splice(e.target.dataset.indexNumber, 1);
+                    addCardBtn.disabled = false;
+                    notInEditing = true;
+                }
                 triggeredArray[indexNr].textWrapper = 'p';
                 addCardBtn.disabled = false;
                 notInEditing = true;
@@ -227,6 +240,8 @@ function changeTextWrapper(e) {
     const triggeredArray = returnFeed(triggerFeed);
     const indexNr = e.target.dataset.indexNumber;
     if(triggeredArray[indexNr].textWrapper == 'p' && notInEditing && e.target.dataset.type == "textarea") {
+        e.target.parentElement.classList.toggle("editing");
+        console.log(e.target.parentElement.classList);
         notInEditing = false;
         addCardBtn.disabled = true;
         triggeredArray[indexNr].textWrapper = 'textarea';
@@ -337,6 +352,7 @@ function render() {
     updateCardYPosition(doingCards);
     updateCardYPosition(doneCards);
     saveData();
+    console.log("RENDER");
 }
 
 
@@ -356,9 +372,5 @@ function getData() {
     doingCards = JSON.parse(window.localStorage.getItem('doingFeed')) ? JSON.parse(window.localStorage.getItem('doingFeed')) : [];
     doneCards = JSON.parse(window.localStorage.getItem('doneFeed')) ? JSON.parse(window.localStorage.getItem('doneFeed')) : [];
 }
-
-
-
-
 
 
