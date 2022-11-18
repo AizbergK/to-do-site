@@ -30,8 +30,8 @@ document.getElementById("removeLocalStorage")
 })
 
 
-// let date = new Date();
-// console.log((new Date()).toLocaleString());
+let date = new Date();
+console.log((new Date()).toLocaleString());
 
 
 // TO DO FEED EVENT LISTENERS
@@ -193,12 +193,10 @@ function deleteCard(e) {
 // Pushes card on button press based on button type dataset.
 
 function pushForward(e) {
-    //console.log(e.target.parentElement.parentElement)
     const rollInCard = e.target.parentElement.parentElement.cloneNode(true);
     if(e.target.dataset.type == "push-card-btn") {
         
         const insertRollInCard = document.querySelector(`#${returnNewParentFeed(e.currentTarget.dataset.feed)}-card-container`);
-        console.log(`#${returnNewParentFeed(e.currentTarget.dataset.feed)}-card-container`)
         rollInCard.classList.toggle("slide-in-left");
         insertRollInCard.insertBefore(rollInCard, insertRollInCard.firstChild);
         
@@ -212,7 +210,6 @@ function pushForward(e) {
     } else if(e.target.dataset.type == "reverse-card-btn") {
 
         const insertRollInCard = document.querySelector(`#${returnNewParentFeed(e.currentTarget.dataset.feed, -1)}-card-container`);
-        console.log(`#${returnNewParentFeed(e.currentTarget.dataset.feed)}-card-container`)
         rollInCard.classList.toggle("slide-in-right");
         insertRollInCard.insertBefore(rollInCard, insertRollInCard.firstChild);
 
@@ -256,19 +253,21 @@ function changeTextWrapper(e) {
     const triggerFeed = e.currentTarget.dataset.feed;
     const triggeredArray = returnFeed(triggerFeed);
     const indexNr = e.target.dataset.indexNumber;
-    if(triggeredArray[indexNr].textWrapper == 'p' && notInEditing && e.target.dataset.type == "textarea") {
-        notInEditing = false;
-        addCardBtn.disabled = true;
-        triggeredArray[indexNr].textWrapper = 'textarea';
-        render();
-        const cardInEditing = document.getElementById(`${triggerFeed}${indexNr}`);
-        cardInEditing.draggable = false;
-        const textAreaEdit = document.getElementById(`text${triggerFeed}${indexNr}`)
-        textAreaEdit.style.height = `auto`;
-        textAreaEdit.style.height = `${textAreaEdit.scrollHeight}px`;
-        textAreaEdit.focus();
-        textAreaEdit.selectionStart = textAreaEdit.value.length;
-    }  
+    if(e.target.dataset.type == "textarea") {
+        if(triggeredArray[indexNr].textWrapper == 'p' && notInEditing) {
+            notInEditing = false;
+            addCardBtn.disabled = true;
+            triggeredArray[indexNr].textWrapper = 'textarea';
+            render();
+            const cardInEditing = document.getElementById(`${triggerFeed}${indexNr}`);
+            cardInEditing.draggable = false;
+            const textAreaEdit = document.getElementById(`text${triggerFeed}${indexNr}`)
+            textAreaEdit.style.height = `auto`;
+            textAreaEdit.style.height = `${textAreaEdit.scrollHeight}px`;
+            textAreaEdit.focus();
+            textAreaEdit.selectionStart = textAreaEdit.value.length;
+        }  
+    }
 }
 
 
@@ -370,7 +369,6 @@ function render() {
     updateCardYPosition(doingCards);
     updateCardYPosition(doneCards);
     saveData();
-    // console.log("RENDER");
 }
 
 

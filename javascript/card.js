@@ -5,7 +5,7 @@ class Card {
         this.listIndex = 0;
         this.toDoText = '';
         this.textWrapper = 'textarea';
-        this.parentFeed = 'todo'
+        this.parentFeed = 'todo';
         this.dateStarted = (new Date()).toLocaleString();
         // this.generateHtml();
     }
