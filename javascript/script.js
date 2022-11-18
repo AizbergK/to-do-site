@@ -4,7 +4,7 @@ import { Card } from "./card.js";
 // MAIN HTML OBJECTS
 
 const addCardBtn = document.querySelector("#add-card-btn");
-const toDoFeed = document.querySelector("#to-do-card-container");
+const toDoFeed = document.querySelector("#todo-card-container");
 const doingFeed = document.querySelector("#doing-card-container");
 const doneFeed = document.querySelector("#done-card-container");
 
@@ -74,10 +74,7 @@ let targetFeedIndex;
 draggableCards.forEach(draggable => {
 
     draggable.addEventListener("dragstart", function(e) { 
-        console.log(e.target)
-        if (!e.target.classList.contains("editing")) {
-            e.target.classList.toggle("dragging");
-        }
+        e.target.classList.toggle("dragging");
     })
 
     draggable.addEventListener("dragend", function(e) {
@@ -196,16 +193,36 @@ function deleteCard(e) {
 // Pushes card on button press based on button type dataset.
 
 function pushForward(e) {
+    //console.log(e.target.parentElement.parentElement)
+    const rollInCard = e.target.parentElement.parentElement.cloneNode(true);
     if(e.target.dataset.type == "push-card-btn") {
+        
+        const insertRollInCard = document.querySelector(`#${returnNewParentFeed(e.currentTarget.dataset.feed)}-card-container`);
+        console.log(`#${returnNewParentFeed(e.currentTarget.dataset.feed)}-card-container`)
+        rollInCard.classList.toggle("slide-in-left");
+        insertRollInCard.insertBefore(rollInCard, insertRollInCard.firstChild);
+        
         const index = e.target.dataset.indexNumber;
         const triggeredArray = e.currentTarget.dataset.feed;
         const targetArray = returnNewParentFeed(e.currentTarget.dataset.feed);
+        e.target.parentElement.parentElement.classList.toggle("slide-out-right")
+        setTimeout(() => {
         moveCard(index, targetArray, triggeredArray);
+        }, 1000)
     } else if(e.target.dataset.type == "reverse-card-btn") {
+
+        const insertRollInCard = document.querySelector(`#${returnNewParentFeed(e.currentTarget.dataset.feed, -1)}-card-container`);
+        console.log(`#${returnNewParentFeed(e.currentTarget.dataset.feed)}-card-container`)
+        rollInCard.classList.toggle("slide-in-right");
+        insertRollInCard.insertBefore(rollInCard, insertRollInCard.firstChild);
+
         const index = e.target.dataset.indexNumber;
         const triggeredArray = e.currentTarget.dataset.feed;
         const targetArray = returnNewParentFeed(e.currentTarget.dataset.feed, -1);
+        e.target.parentElement.parentElement.classList.toggle("slide-out-left")
+        setTimeout(() => {
         moveCard(index, targetArray, triggeredArray);
+        }, 1000)
     }
 }
 
@@ -240,12 +257,12 @@ function changeTextWrapper(e) {
     const triggeredArray = returnFeed(triggerFeed);
     const indexNr = e.target.dataset.indexNumber;
     if(triggeredArray[indexNr].textWrapper == 'p' && notInEditing && e.target.dataset.type == "textarea") {
-        e.target.parentElement.classList.toggle("editing");
-        console.log(e.target.parentElement.classList);
         notInEditing = false;
         addCardBtn.disabled = true;
         triggeredArray[indexNr].textWrapper = 'textarea';
         render();
+        const cardInEditing = document.getElementById(`${triggerFeed}${indexNr}`);
+        cardInEditing.draggable = false;
         const textAreaEdit = document.getElementById(`text${triggerFeed}${indexNr}`)
         textAreaEdit.style.height = `auto`;
         textAreaEdit.style.height = `${textAreaEdit.scrollHeight}px`;
@@ -297,7 +314,8 @@ function updateCardYPosition(list) {
             class="card-div textfield" 
             id="text${card.parentFeed}${card.listIndex}" 
             data-index-number="${card.listIndex}" 
-            style="height:auto">${card.toDoText}</${card.textWrapper}>
+            style="height:auto">${card.toDoText}</${card.textWrapper}
+        >
         <div class="card-footer">
             <div class="date-created">${card.dateStarted}</div>
                 <button 
@@ -352,7 +370,7 @@ function render() {
     updateCardYPosition(doingCards);
     updateCardYPosition(doneCards);
     saveData();
-    console.log("RENDER");
+    // console.log("RENDER");
 }
 
 

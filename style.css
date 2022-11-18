@@ -66,6 +66,7 @@ body {
 .done-card-container {
     margin-right: 0.5em;
     overflow-y: auto;
+    overflow-x: hidden;
     height: 100%;
 }
 
@@ -178,4 +179,56 @@ input {
 .dragging {
     opacity: 0.5;
 }
+
+/* ANIMATIONS */
+
+@keyframes cardSlideOutRight {
+    from {left: 0%;}
+    to {left: 110%;}
+}
+
+@keyframes cardSlideOutLeft {
+    from {right: 0%;}
+    to {right: 110%;}
+}
+
+@keyframes cardSlideInRight {
+    from {left: 110%;}
+    to {left: 0%;}
+}
+
+@keyframes cardSlideInLeft {
+    from {right: 110%;}
+    to {right: 0%;}
+}
+
+
+.slide-out-right {
+    animation-name: cardSlideOutRight;
+    animation-duration: 1s;
+    position: relative;
+}
+
+.slide-out-left {
+    animation-name: cardSlideOutLeft;
+    animation-duration: 1s;
+    position: relative;
+
+}
+
+.slide-in-right {
+    animation-name: cardSlideInRight;
+    animation-duration: 1s;
+    position: relative;
+
+}
+
+.slide-in-left {
+    animation-name: cardSlideInLeft;
+    animation-duration: 1s;
+    position: relative;
+
+}
+
+
 
