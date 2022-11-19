@@ -261,9 +261,11 @@ function pushForward(e) {
         const triggeredArray = e.currentTarget.dataset.feed;
         const targetArray = returnNewParentFeed(e.currentTarget.dataset.feed);
         e.target.parentElement.parentElement.classList.toggle("slide-out-right")
+        toggleButtonDisabled();
         setTimeout(() => {
         moveCard(index, targetArray, triggeredArray);
         render();
+        // toggleButtonDisabled();
         }, 190)
     } else if(e.target.dataset.type == "reverse-card-btn") {
 
@@ -275,11 +277,20 @@ function pushForward(e) {
         const triggeredArray = e.currentTarget.dataset.feed;
         const targetArray = returnNewParentFeed(e.currentTarget.dataset.feed, -1);
         e.target.parentElement.parentElement.classList.toggle("slide-out-left")
+        toggleButtonDisabled();
         setTimeout(() => {
         moveCard(index, targetArray, triggeredArray);
         render();
+        // toggleButtonDisabled();
         }, 190)
     }
+}
+
+function toggleButtonDisabled() {
+    const pushForwardButtons = document.querySelectorAll(".push-card-btn");
+    const pushBackwardsButtons = document.querySelectorAll(".reverse-card-btn");
+    pushForwardButtons.forEach(button => button.disabled = !button.disabled);
+    pushBackwardsButtons.forEach(button => button.disabled = !button.disabled);
 }
 
 
