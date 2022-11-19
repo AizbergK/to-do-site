@@ -190,7 +190,6 @@ let notInEditing = true;
 // save input is received. Toggles text wrapper from <textarea> to <p>
 
 function saveTextInput(e) {
-    // e.preventDefault();
     const triggeredArray = returnFeed(e.currentTarget.dataset.feed);
     const modularId = /(texttodo|textdoing|textdone)\d+/;
     if(modularId.test(e.target.id)) {
@@ -209,13 +208,15 @@ function saveTextInput(e) {
                 let cleanUserInput = DOMPurify.sanitize(e.target.value, {ALLOWED_TAGS: [], KEEP_CONTENT: false});
                 triggeredArray[indexNr].toDoText = cleanUserInput;
                 if(cleanUserInput == "") {
+                    console.log(cleanUserInput)
                     triggeredArray.splice(e.target.dataset.indexNumber, 1);
                     addCardBtn.disabled = false;
                     notInEditing = true;
+                } else {
+                    triggeredArray[indexNr].textWrapper = 'p';
+                    addCardBtn.disabled = false;
+                    notInEditing = true;
                 }
-                triggeredArray[indexNr].textWrapper = 'p';
-                addCardBtn.disabled = false;
-                notInEditing = true;
             }
             render();
         }
