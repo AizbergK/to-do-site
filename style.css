@@ -93,7 +93,7 @@ body {
 
 .card {
     border-radius: 1em;
-    width: 90%;
+    width: 280px;
     display: flex;
     flex-direction: column;
     background-color: whitesmoke;
@@ -103,6 +103,8 @@ body {
     margin: 0 0.5em 1em auto;
     position: relative;
 }
+
+
 
 .card p {
     padding: 0.5em;
@@ -176,58 +178,72 @@ input {
     color: red;
 }
 
-.dragging {
-    opacity: 0.5;
-}
-
 /* ANIMATIONS */
 
+body {
+    --animation-duration: 0.2s;
+    --start-percentage: 5%;
+    --end-percentage: 110%;
+}
+
 @keyframes cardSlideOutRight {
-    from {left: 0%;}
-    to {left: 110%;}
+    from {left: var(--start-percentage);}
+    to {left: var(--end-percentage);}
 }
 
 @keyframes cardSlideOutLeft {
-    from {right: 0%;}
-    to {right: 110%;}
+    from {right: var(--start-percentage);}
+    to {right: var(--end-percentage);}
 }
 
 @keyframes cardSlideInRight {
-    from {left: 110%;}
-    to {left: 0%;}
+    from {left: var(--end-percentage);}
+    to {left: var(--start-percentage);}
 }
 
 @keyframes cardSlideInLeft {
-    from {right: 110%;}
-    to {right: 0%;}
+    from {right: var(--end-percentage);}
+    to {right: var(--start-percentage);}
 }
-
 
 .slide-out-right {
     animation-name: cardSlideOutRight;
-    animation-duration: 1s;
+    animation-duration: var(--animation-duration);
     position: relative;
 }
 
 .slide-out-left {
     animation-name: cardSlideOutLeft;
-    animation-duration: 1s;
+    animation-duration: var(--animation-duration);
     position: relative;
-
 }
 
 .slide-in-right {
     animation-name: cardSlideInRight;
-    animation-duration: 1s;
+    animation-duration: var(--animation-duration);
     position: relative;
-
 }
 
 .slide-in-left {
     animation-name: cardSlideInLeft;
-    animation-duration: 1s;
+    animation-duration: var(--animation-duration);
     position: relative;
+}
 
+.dragging {
+    opacity: 0%;
+    background-color: aqua;
+
+}
+
+#opaque {
+    position: absolute;
+    rotate: 2deg;
+    /* top: -500px;
+    left: -500px; */
+    opacity: 100%;
+    scale: 90%;
+    pointer-events: none;
 }
 
 

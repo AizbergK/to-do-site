@@ -70,24 +70,38 @@ let draggedCardIndex;
 let draggedFeedOrigin;
 let draggedFeedTarget;
 let targetFeedIndex;
+let cardHeight;
+let cardWidth;
+let cardVerticalPosition;
+let cardHorizontalPosition;
 
 draggableCards.forEach(draggable => {
 
     draggable.addEventListener("dragstart", function(e) { 
+        let dragCard = e.target.cloneNode(true);
+        dragCard.id = "opaque";
+        document.querySelector(".container").appendChild(dragCard);
+        e.dataTransfer.setDragImage(e.target, e.target.getBoundingClientRect().width/2, e.target.getBoundingClientRect().height/2);
         e.target.classList.toggle("dragging");
-    })
+        cardHeight = e.target.getBoundingClientRect().height / 2;
+        cardWidth = e.target.getBoundingClientRect().width / 2;
+    }, false)
 
     draggable.addEventListener("dragend", function(e) {
         e.target.classList.toggle("dragging");
         if(draggedFeedOrigin != draggedFeedTarget){
             moveCard(draggedCardIndex, draggedFeedTarget, draggedFeedOrigin, targetFeedIndex);
+            render();
         } else {
             if(draggedCardIndex < targetFeedIndex){
                 moveCard(draggedCardIndex, draggedFeedTarget, draggedFeedOrigin, targetFeedIndex);
+                render();
             } else if(draggedCardIndex > targetFeedIndex) {
                 moveCard(draggedCardIndex, draggedFeedTarget, draggedFeedOrigin, targetFeedIndex);
+                render();
             }
         }
+        document.getElementById("opaque").remove();
     })
 
     draggable.addEventListener("dragover", function(e) {
@@ -101,12 +115,46 @@ draggableCards.forEach(draggable => {
         } catch (error) {
             targetFeedIndex = 0;
         }
+        const targetHtmlFeed = document.querySelector(`#${draggedFeedTarget}-card-container`);
+        const elementAfterHtml = getDraggedAfterHtmlElement(targetHtmlFeed, e.clientY);
+        if(elementAfterHtml == null) {
+            draggable.appendChild(dragged);
+        } else {
+            draggable.insertBefore(dragged, elementAfterHtml);
+        }
+        
     })
 })
+
+function getDraggedAfterHtmlElement(container, y) {
+    const draggableElements = [...container.querySelectorAll(".draggable:not(.dragging)")];
+    return draggableElements.reduce((closest, child) => {
+        const box = child.getBoundingClientRect();
+        const offset = y - box.top - box.height / 2;
+        if(offset < 0 && offset > closest.offset) {
+            return { 
+                offset: offset,
+                element: child}
+        } else {
+            return closest;
+        }
+    }, { offset: Number.NEGATIVE_INFINITY }).element;
+}
 
 function getTargetFeedIndex(mouseY, feed) {
     return feed.findLast(card => (mouseY - card.positionY) > 0).listIndex + 1;
 }
+
+const draggingPosition = document.getElementById("container");
+
+draggingPosition.addEventListener("dragover", function(e) {
+    e.preventDefault()
+    cardVerticalPosition = e.clientY;
+    cardHorizontalPosition = e.clientX;
+    const shadowElement = document.getElementById("opaque");
+    shadowElement.style.top = `${cardVerticalPosition - cardHeight}px`;
+    shadowElement.style.left = `${cardHorizontalPosition - cardWidth}px`;
+})
 
 // Limits maximum textareas in editing to 1
 
@@ -206,7 +254,8 @@ function pushForward(e) {
         e.target.parentElement.parentElement.classList.toggle("slide-out-right")
         setTimeout(() => {
         moveCard(index, targetArray, triggeredArray);
-        }, 1000)
+        render();
+        }, 190)
     } else if(e.target.dataset.type == "reverse-card-btn") {
 
         const insertRollInCard = document.querySelector(`#${returnNewParentFeed(e.currentTarget.dataset.feed, -1)}-card-container`);
@@ -219,7 +268,8 @@ function pushForward(e) {
         e.target.parentElement.parentElement.classList.toggle("slide-out-left")
         setTimeout(() => {
         moveCard(index, targetArray, triggeredArray);
-        }, 1000)
+        render();
+        }, 190)
     }
 }
 
@@ -240,7 +290,7 @@ function moveCard(cardIndex, passedTargetArray, passedTriggeredArray, targetFeed
     const swapCard = triggeredArray[cardIndex]
     triggeredArray.splice(cardIndex, 1);
     targetArray.splice(targetFeedIndex, 0, swapCard);
-    render();
+    // render();
 
 }
 
@@ -369,6 +419,7 @@ function render() {
     updateCardYPosition(doingCards);
     updateCardYPosition(doneCards);
     saveData();
+    console.log("RENDER")
 }
 
 
