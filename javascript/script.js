@@ -75,9 +75,13 @@ let cardWidth;
 let cardVerticalPosition;
 let cardHorizontalPosition;
 
+const dragStartEvent = "dragstart";
+const dragEndEvent = "dragend";
+const dragOverEvent = "dragover";
+
 draggableCards.forEach(draggable => {
 
-    draggable.addEventListener("dragstart", function(e) { 
+    draggable.addEventListener(dragStartEvent, function(e) { 
         let dragCard = e.target.cloneNode(true);
         dragCard.id = "opaque";
         e.target.classList.toggle("dragging");
@@ -87,7 +91,7 @@ draggableCards.forEach(draggable => {
         cardWidth = e.target.getBoundingClientRect().width / 2;
     }, false)
 
-    draggable.addEventListener("dragend", function(e) {
+    draggable.addEventListener(dragEndEvent, function(e) {
         e.target.classList.toggle("dragging");
         if(draggedFeedOrigin != draggedFeedTarget){
             moveCard(draggedCardIndex, draggedFeedTarget, draggedFeedOrigin, targetFeedIndex);
@@ -104,7 +108,7 @@ draggableCards.forEach(draggable => {
         document.getElementById("opaque").remove();
     })
 
-    draggable.addEventListener("dragover", function(e) {
+    draggable.addEventListener(dragOverEvent, function(e) {
         e.preventDefault();
         const dragged = document.querySelector(".dragging");
         draggedCardIndex = dragged.dataset.indexNumber;
@@ -147,7 +151,7 @@ function getTargetFeedIndex(mouseY, feed) {
 
 const draggingPosition = document.getElementById("container");
 
-draggingPosition.addEventListener("dragstart", function(e) {
+draggingPosition.addEventListener(dragStartEvent, function(e) {
     setTimeout(() => {
         e.preventDefault()
         cardVerticalPosition = e.clientY;
@@ -158,7 +162,7 @@ draggingPosition.addEventListener("dragstart", function(e) {
     }, 0);
 })
 
-draggingPosition.addEventListener("dragover", function(e) {
+draggingPosition.addEventListener(dragOverEvent, function(e) {
     e.preventDefault()
     cardVerticalPosition = e.clientY;
     cardHorizontalPosition = e.clientX;

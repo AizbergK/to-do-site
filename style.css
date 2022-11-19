@@ -12,6 +12,58 @@ body {
 }
 
 /* LAYOUT */
+
+
+.to-do-card-container::-webkit-scrollbar,
+.doing-card-container::-webkit-scrollbar,
+.done-card-container::-webkit-scrollbar,
+.container::-webkit-scrollbar {
+    width: 0.7em;
+    height: 0.7em;
+}
+
+.to-do-card-container::-webkit-scrollbar-track,
+.doing-card-container::-webkit-scrollbar-track,
+.done-card-container::-webkit-scrollbar-track,
+.container::-webkit-scrollbar-track {
+    background: hsl(120 50% 75% / 1);
+    border-radius: 100vw;
+    margin-bottom: 1.5em;
+    margin-left: 0.5em;
+    margin-right: 0.5em;
+}
+
+.to-do-card-container::-webkit-scrollbar-thumb,
+.doing-card-container::-webkit-scrollbar-thumb,
+.done-card-container::-webkit-scrollbar-thumb,
+.container::-webkit-scrollbar-thumb {
+    background: hsl(120 100% 20% / 1);
+    border: 0.2em solid hsl(120 50% 75% / 1);
+    border-radius: 100vw;
+}
+
+
+.to-do-header,
+.doing-header,
+.done-header {
+    text-align: center;
+    padding: 1em 2em;
+    z-index: 1;
+}
+
+.to-do-header,
+.doing-header,
+.done-header {
+    box-sizing: border-box;
+    height: 65px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0px;
+    background-color: lightgray;
+}
+
 body {
     margin: 0;
     overflow: hidden;
@@ -25,6 +77,13 @@ body {
     height: calc(100vh - 85px);
     background-color: #fffff3;
     box-sizing: border-box;
+    overflow-x: overlay;
+}
+
+@media (max-width:1010px ) {
+    .container {
+        justify-content: start;
+    }
 }
 
 .to-do-feed,
@@ -36,59 +95,17 @@ body {
     margin: 20px 10px;
     box-sizing: border-box;
     border: 2px solid black;
-    width: 315px;
+    min-width: 315px;
     flex-direction: column;
     overflow-y: hidden;
-}
-
-.to-do-card-container::-webkit-scrollbar,
-.doing-card-container::-webkit-scrollbar,
-.done-card-container::-webkit-scrollbar {
-    width: 0.7em;
-}
-
-.to-do-card-container::-webkit-scrollbar-track,
-.doing-card-container::-webkit-scrollbar-track,
-.done-card-container::-webkit-scrollbar-track {
-    background: hsl(120 50% 75% / 1);
-    border-radius: 100vw;
-    margin-bottom: 1.5em;
-}
-
-.to-do-card-container::-webkit-scrollbar-thumb,
-.doing-card-container::-webkit-scrollbar-thumb,
-.done-card-container::-webkit-scrollbar-thumb {
-    background: hsl(120 100% 20% / 1);
-    border: 0.2em solid hsl(120 50% 75% / 1);
-    border-radius: 100vw;
 }
 
 .to-do-card-container,
 .doing-card-container,
 .done-card-container {
-    margin-right: 0.5em;
-    overflow-y: auto;
-    overflow-x: hidden;
+    margin-right: 0.3em;
+    overflow-y: overlay;
     height: 100%;
-}
-
-.to-do-header,
-.doing-header,
-.done-header {
-    text-align: center;
-    padding: 1em 2em;
-    z-index: 1;
-}
-
-.to-do-header,
-.doing-header,
-.done-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    position: sticky;
-    top: 0px;
-    background-color: lightgray;
 }
 
 /* CARD DESIGN */
@@ -102,11 +119,9 @@ body {
     padding: 1em;
     height: auto;
     box-sizing: border-box;
-    margin: 0 0.5em 1em auto;
+    margin: 0 0.9em 1em auto;
     position: relative;
 }
-
-
 
 .card p {
     padding: 0.5em;
@@ -211,24 +226,28 @@ body {
 .slide-out-right {
     animation-name: cardSlideOutRight;
     animation-duration: var(--animation-duration);
+    animation-timing-function: ease-in-out;
     position: relative;
 }
 
 .slide-out-left {
     animation-name: cardSlideOutLeft;
     animation-duration: var(--animation-duration);
+    animation-timing-function: ease-in-out;
     position: relative;
 }
 
 .slide-in-right {
     animation-name: cardSlideInRight;
     animation-duration: var(--animation-duration);
+    animation-timing-function: ease-in-out;
     position: relative;
 }
 
 .slide-in-left {
     animation-name: cardSlideInLeft;
     animation-duration: var(--animation-duration);
+    animation-timing-function: ease-in-out;
     position: relative;
 }
 
