@@ -156,6 +156,15 @@ draggingPosition.addEventListener("dragover", function(e) {
     shadowElement.style.left = `${cardHorizontalPosition - cardWidth}px`;
 })
 
+draggableCards.forEach(draggable => {
+    draggable.addEventListener("scroll", () => {
+        updateCardYPosition(todoCards);
+        updateCardYPosition(doingCards);
+        updateCardYPosition(doneCards);
+        console.log("HI")
+    })
+})
+
 // Limits maximum textareas in editing to 1
 
 let notInEditing = true;
