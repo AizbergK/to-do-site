@@ -82,13 +82,15 @@ const dragOverEvent = "dragover";
 draggableCards.forEach(draggable => {
 
     draggable.addEventListener(dragStartEvent, function(e) { 
-        let dragCard = e.target.cloneNode(true);
-        dragCard.id = "opaque";
-        e.target.classList.toggle("dragging");
-        document.querySelector(".container").appendChild(dragCard);
-        e.dataTransfer.setDragImage(e.target, e.target.getBoundingClientRect().width/2, e.target.getBoundingClientRect().height/2);
-        cardHeight = e.target.getBoundingClientRect().height / 2;
-        cardWidth = e.target.getBoundingClientRect().width / 2;
+        if(notInEditing) {
+            let dragCard = e.target.cloneNode(true);
+            dragCard.id = "opaque";
+            e.target.classList.toggle("dragging");
+            document.querySelector(".container").appendChild(dragCard);
+            e.dataTransfer.setDragImage(e.target, e.target.getBoundingClientRect().width/2, e.target.getBoundingClientRect().height/2);
+            cardHeight = e.target.getBoundingClientRect().height / 2;
+            cardWidth = e.target.getBoundingClientRect().width / 2;
+        }
     }, false)
 
     draggable.addEventListener(dragEndEvent, function(e) {
@@ -208,7 +210,6 @@ function saveTextInput(e) {
                 let cleanUserInput = DOMPurify.sanitize(e.target.value, {ALLOWED_TAGS: [], KEEP_CONTENT: false});
                 triggeredArray[indexNr].toDoText = cleanUserInput;
                 if(cleanUserInput == "") {
-                    console.log(cleanUserInput)
                     triggeredArray.splice(e.target.dataset.indexNumber, 1);
                     addCardBtn.disabled = false;
                     notInEditing = true;
