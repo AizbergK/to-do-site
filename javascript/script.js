@@ -80,9 +80,9 @@ draggableCards.forEach(draggable => {
     draggable.addEventListener("dragstart", function(e) { 
         let dragCard = e.target.cloneNode(true);
         dragCard.id = "opaque";
+        e.target.classList.toggle("dragging");
         document.querySelector(".container").appendChild(dragCard);
         e.dataTransfer.setDragImage(e.target, e.target.getBoundingClientRect().width/2, e.target.getBoundingClientRect().height/2);
-        e.target.classList.toggle("dragging");
         cardHeight = e.target.getBoundingClientRect().height / 2;
         cardWidth = e.target.getBoundingClientRect().width / 2;
     }, false)
@@ -146,6 +146,17 @@ function getTargetFeedIndex(mouseY, feed) {
 }
 
 const draggingPosition = document.getElementById("container");
+
+draggingPosition.addEventListener("dragstart", function(e) {
+    setTimeout(() => {
+        e.preventDefault()
+        cardVerticalPosition = e.clientY;
+        cardHorizontalPosition = e.clientX;
+        const shadowElement = document.getElementById("opaque");
+        shadowElement.style.top = `${cardVerticalPosition - cardHeight}px`;
+        shadowElement.style.left = `${cardHorizontalPosition - cardWidth}px`;
+    }, 0);
+})
 
 draggingPosition.addEventListener("dragover", function(e) {
     e.preventDefault()
